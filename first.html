@@ -9,7 +9,7 @@
     <h1>hello</h1>
     <div id="out"></div>
     <script>
-        const params=new UrlSearchParams(window.location.search);
+        const params=new URLSearchParams(window.location.search);
         const pay=params.get("pay");
         document.getElementById("out").innerHTML=pay;
     </script>
