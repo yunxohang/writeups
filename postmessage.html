@@ -6,19 +6,10 @@
   <body>
     <h1 style="font-family:Monospace; text-align:center;">Post message testing!!!</h1>
     <script>
-        function handler(event) {
-          if(event.origin!="http://testphp.vulnweb.com"){
-
-            return;
-          }
-            document.body.textContent = "MESSAGE RECEIVED"
-
-            
-    
-  ;
-  }
-
-  window.addEventListener("message", handler);
-    </script>
+  window.addEventListener("message", event => {
+    if (event.origin !== "http://testphp.vulnweb.com") return;
+    document.body.textContent = "MESSAGE RECEIVED";
+  });
+</script>
   </body>
 </html>
