@@ -8,8 +8,13 @@
     <script>
   window.addEventListener("message", event => {
     if (event.origin !== "http://testphp.vulnweb.com") return;
-    document.write("THE DATA IS"+event.data);
+    run(event.data);
   });
 </script>
+    <script>function run(test){
+ document.write(test);
+  alert("haha");
+    
+}</script>
   </body>
 </html>
