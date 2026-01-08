@@ -6,12 +6,14 @@
     <title>My first writeup</title>
 </head>
 <body>
-    <h1>hello</h1>
+    <h1>hello, I'll just redirect</h1>
     <div id="out"></div>
     <script>
         const params=new URLSearchParams(window.location.search);
         const pay=params.get("pay");
         document.getElementById("out").innerHTML=pay;
+        let test=window.open("https://yunxohang.github.io/test","test_window");
+        
     </script>
 </body>
 </html>
