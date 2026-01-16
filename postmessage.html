@@ -19,11 +19,12 @@
   const encodedData2 = encodeURIComponent(JSON.stringify(message2));
 
   // Send message after 5 seconds
-  setTimeout(() => {
-    if (!b.closed) {
-      b.postMessage(encodedData2, "*");
-    }
-  }, 5000);
+  const intervalId = setInterval(() => {
+  if (b) {
+    b.postMessage(encodedData2, "*");
+    clearInterval(intervalId);
+  }
+}, 2000);
 </script>
 
 </body>
