@@ -9,7 +9,7 @@
     <h1>hello, I'll just redirect</h1>
     <div id="out"></div>
     
-    <iframe src="https://example.com" sandbox="allow-scripts allow-popups allow-same-origin"></iframe>
+    <iframe src="https://example.com" sandbox="allow-scripts allow-popups"></iframe>
     <script>
         window.addEventListener("message", (e) => {
             if (event.origin !== "https://so-xss.terjanq.me") {
