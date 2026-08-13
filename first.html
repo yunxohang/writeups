@@ -12,6 +12,9 @@
     <iframe src="https://example.com" sandbox="allow-scripts allow-popups allow-same-origin"></iframe>
     <script>
         window.addEventListener("message", (e) => {
+            if (event.origin !== "https://so-xss.terjanq.me") {
+        return;
+    }
           alert(e.data);
 
         });
